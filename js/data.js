@@ -1,7 +1,7 @@
 import { getRandomInt, randomIdInRange, randomValueFromArray} from './utils.js';
 
 const userNames = ['Артем', 'Дарья', 'Лука', 'Александр', 'Матвей', 'Лилия'];
-
+ 
 const messages = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
