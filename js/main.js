@@ -1,1 +1,1 @@
-import './functions.js.js';
+import './DrawingMiniature.js';
