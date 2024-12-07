@@ -1,7 +1,7 @@
 import { getRandomInt, randomIdInRange, randomValueFromArray} from './utils.js';
 
 const userNames = ['Артем', 'Дарья', 'Лука', 'Александр', 'Матвей', 'Лилия'];
- 
+
 const messages = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -27,6 +27,16 @@ const getPhoto = () => {
 
   return {
     id: ID,
+    url: `photos/${ID}.jpg`,
+    description: `Представьте, что здесь описание фотографии ${ID}`,
+    likes: getRandomInt(15, 200),
+    comments: Array.from({length: getRandomInt(0, 30)}, getComment),
+  };
+};
+
+const getPosts = () => Array.from({length: photoNumber}, getPhoto);
+
+export {getPosts};
     url: `photos/${ID}.jpg`,
     description: `Представьте, что здесь описание фотографии ${ID}`,
     likes: getRandomInt(15, 200),
