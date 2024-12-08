@@ -1,1 +1,2 @@
-import './DrawingMiniature.js';
+import './pictures.js';
+import './hashtags.js';
