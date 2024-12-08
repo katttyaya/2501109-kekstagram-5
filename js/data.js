@@ -1,8 +1,20 @@
-import { getRandomInt, randomIdInRange, randomValueFromArray} from './utils.js';
+import {getRandomInteger, createRandomNumbers, getRandomArrayElement} from './util.js';
 
-const userNames = ['Артем', 'Дарья', 'Лука', 'Александр', 'Матвей', 'Лилия'];
+const DESCRIPTIONS = [
+  'Пойманный момент, который невозможно забыть.',
+  'Красота в каждом мгновении.',
+  'Когда слова лишние, а кадр говорит сам за себя.',
+  'Место, куда хочется возвращаться снова и снова.',
+  'Вдохновляющая атмосфера и уникальные детали.',
+  'Тот самый кадр, который заставляет задуматься.',
+  'Настроение, переданное через объектив.',
+  'Секунда, в которой скрыта целая история.',
+  'Здесь каждый найдёт что-то своё.',
+  'Видеть красоту в простых вещах.',
+  'Тут должно быть описание, но его не будет'
+];
 
-const messages = [
+const MESSAGES = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
   'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
@@ -11,39 +23,39 @@ const messages = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
 ];
 
-const photoNumber = 25;
-const randomPhotoID = randomIdInRange(1,25);
-const randomMessageID = randomIdInRange(1,20);
+const NAMES = [
+  'Артём',
+  'Михаил',
+  'Матвей',
+  'Тимофей',
+  'Илья',
+  'Наталья',
+  'Светлана',
+  'Дарья',
+  'Ольга',
+  'Ксения',
+];
 
-const getComment = () => ({
-  id: randomMessageID(),
-  avatar: `img/avatar-${getRandomInt(1, 6)}.svg`,
-  message: randomValueFromArray(messages),
-  name: randomValueFromArray(userNames),
+const generatePhotoId = createRandomNumbers(1, 25);
+const urlId = createRandomNumbers(1, 25);
+const generateNumbersOfLikes = createRandomNumbers(15, 200);
+const userId = createRandomNumbers(1, 100000);
+
+const createComment = () => ({
+  id: userId(),
+  avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
+  message: getRandomArrayElement(MESSAGES),
+  name: getRandomArrayElement(NAMES),
 });
 
-const getPhoto = () => {
-  const ID = randomPhotoID();
+const createPhotoDescription = () => ({
+  id: generatePhotoId(),
+  url: `photos/${urlId()}.jpg`,
+  description: getRandomArrayElement(DESCRIPTIONS),
+  likes: generateNumbersOfLikes(),
+  comments: Array.from({length: getRandomInteger(0, 30)}, createComment)
+});
 
-  return {
-    id: ID,
-    url: `photos/${ID}.jpg`,
-    description: `Представьте, что здесь описание фотографии ${ID}`,
-    likes: getRandomInt(15, 200),
-    comments: Array.from({length: getRandomInt(0, 30)}, getComment),
-  };
-};
+const createPhotoDescriptions = () => Array.from({length: 25}, createPhotoDescription);
 
-const getPosts = () => Array.from({length: photoNumber}, getPhoto);
-
-export {getPosts};
-    url: `photos/${ID}.jpg`,
-    description: `Представьте, что здесь описание фотографии ${ID}`,
-    likes: getRandomInt(15, 200),
-    comments: Array.from({length: getRandomInt(0, 30)}, getComment),
-  };
-};
-
-const getPosts = () => Array.from({length: photoNumber}, getPhoto);
-
-export {getPosts};
+export {createPhotoDescriptions};
