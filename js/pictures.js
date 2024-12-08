@@ -1,27 +1,39 @@
-import { createPhotoDescriptions } from './data.js';
-import { openBigPicture } from './bigPicture.js';
+import {createPhotoDescriptions} from './data.js';
+import {openBigPicture} from './bigPicture.js';
 
-const picturesList = document.querySelector('.pictures');
+const pictures = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture')
   .content
   .querySelector('.picture');
-
 const createPictures = createPhotoDescriptions();
 
-const similarListFragment = document.createDocumentFragment();
+const renderPhoto = (picture) => {
+  const { url, description, likes, comments } = picture;
+  const pictureElement = pictureTemplate.cloneNode(true);
 
-createPictures.forEach((photo) => {
-  const { url, description, likes, comments } = photo;
-  const picture = pictureTemplate.cloneNode(true);
-  picture.querySelector('.picture__img').src = url;
-  picture.querySelector('.picture__img').alt = description;
-  picture.querySelector('.picture__comments').textContent = comments.length;
-  picture.querySelector('.picture__likes').textContent = likes;
-  similarListFragment.appendChild(picture);
+  pictureElement.querySelector('.picture__img').src = url;
+  pictureElement.querySelector('.picture__img').alt = description;
+  pictureElement.querySelector('.picture__comments').textContent = comments.length;
+  pictureElement.querySelector('.picture__likes').textContent = likes;
 
-  picture.addEventListener('click', () => {
-    openBigPicture(photo);
+  const onPictureElementClick = (evt) => {
+    evt.preventDefault();
+
+    openBigPicture(picture);
+  };
+
+  pictureElement.addEventListener('click', onPictureElementClick);
+
+  return pictureElement;
+};
+
+const fragment = document.createDocumentFragment();
+
+const renderPhotos = (objects) => {
+  objects.forEach((item) => {
+    fragment.appendChild(renderPhoto(item));
   });
-});
+};
 
-picturesList.appendChild(similarListFragment);
+renderPhotos(createPictures);
+pictures.appendChild(fragment);
