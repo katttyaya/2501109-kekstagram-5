@@ -12,8 +12,8 @@ const loadComments = bigPicture.querySelector('.comments-loader');
 const socialFooterText = bigPicture.querySelector('.social__footer-text');
 const commentFragment = document.createDocumentFragment();
 
-let commentsCount = COMMENTS_STEP;
 let currentComments = [];
+let commentsCount = COMMENTS_STEP;
 
 const createComment = (comment) => {
   const newComment = document.createElement('li');
