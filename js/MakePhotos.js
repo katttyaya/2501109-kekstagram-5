@@ -1,16 +1,27 @@
-import { makeAllPictures } from './DrawingMiniature.js';
-import { getPosts } from './data.js';
-import { openBigPost } from './BigPictures.js';
+import { createPhotoDescriptions } from './data.js';
+import { openBigPicture } from './BigPicture.js';
 
-const allPosts = getPosts();
-makeAllPictures(allPosts);
+const picturesList = document.querySelector('.pictures');
+const pictureTemplate = document.querySelector('#picture')
+  .content
+  .querySelector('.picture');
 
-const photoOnClick = (evt) => {
-  const currentElement = evt.target.closest('.picture');
-  if (currentElement) {
-    const currentPicture = allPosts.find((photo) => photo.url === currentElement.querySelector('.picture__img').getAttribute('src'));
-    openBigPost(currentPicture);
-  }
-};
+const createPictures = createPhotoDescriptions();
 
-document.querySelector('.pictures').addEventListener('click', photoOnClick);
+const similarListFragment = document.createDocumentFragment();
+
+createPictures.forEach((photo) => {
+  const { url, description, likes, comments } = photo;
+  const picture = pictureTemplate.cloneNode(true);
+  picture.querySelector('.picture__img').src = url;
+  picture.querySelector('.picture__img').alt = description;
+  picture.querySelector('.picture__comments').textContent = comments.length;
+  picture.querySelector('.picture__likes').textContent = likes;
+  similarListFragment.appendChild(picture);
+
+  picture.addEventListener('click', () => {
+    openBigPicture(photo);
+  });
+});
+
+picturesList.appendChild(similarListFragment);
