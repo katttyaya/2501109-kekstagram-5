@@ -1,4 +1,5 @@
 import { uploadPhoto } from './load.js';
+import { showResultMessage } from './util.js';
 
 const imageForm = document.querySelector('.img-upload__form');
 const uploadModal = document.querySelector('.img-upload__overlay');
@@ -24,7 +25,7 @@ const filterButtonList = document.querySelector('.effects__list');
 const SCALE_DIFFERENCE = 25;
 const MIN_SCALE = 25;
 const MAX_SCALE = 100;
-const sliderElement = document.querySelector('.effect-level__slider');
+const slider = document.querySelector('.effect-level__slider');
 const submitButton = document.querySelector('.img-upload__submit');
 const SubmitButtonText = {
   IDLE: 'Опубликовать',
@@ -60,7 +61,7 @@ const operateScale = (evt) => {
   imagePreview.style.transform = `scale(${scale / 100})`;
 };
 
-noUiSlider.create(sliderElement, {
+noUiSlider.create(slider, {
   range : {
     min : 0,
     max : 100
@@ -72,14 +73,14 @@ noUiSlider.create(sliderElement, {
 
 const operateSliderValue = (filter) => {
   if (filter.name === 'blur') {
-    return `${sliderElement.noUiSlider.get()}px`;
+    return `${slider.noUiSlider.get()}px`;
   }
 
-  return `${sliderElement.noUiSlider.get()}`;
+  return `${slider.noUiSlider.get()}`;
 };
 
 const setDefaultFilter = () => {
-  sliderElement.parentElement.classList.add('hidden');
+  slider.parentElement.classList.add('hidden');
   imagePreview.style.filter = '';
   effectLevel.value = DEFAULT_VOLUME;
   document.querySelector('#effect-none').checked = true;
@@ -88,9 +89,9 @@ const setDefaultFilter = () => {
 const onFilterClick = (evt) => {
   if (evt.target.matches('input[type=radio]')) {
     if (evt.target.id !== 'effect-none') {
-      sliderElement.parentElement.classList.remove('hidden');
+      slider.parentElement.classList.remove('hidden');
       const filter = FILTERS[`${evt.target.id}`];
-      sliderElement.noUiSlider.updateOptions({
+      slider.noUiSlider.updateOptions({
         range: {
           min: filter.min,
           max: filter.max
@@ -98,7 +99,7 @@ const onFilterClick = (evt) => {
         step: filter.step,
         start: filter.max,
       });
-      sliderElement.noUiSlider.on('update', () => {
+      slider.noUiSlider.on('update', () => {
         imagePreview.style.filter = `${filter.name}(${operateSliderValue(filter)})`;
         effectLevel.value = operateSliderValue(filter) / filter.max * 100;
       });
@@ -195,63 +196,21 @@ const unblockSubmitButton = () => {
   submitButton.textContent = SubmitButtonText.IDLE;
 };
 
-let onModalClick;
-
-const deleteResultMessage = () => {
-  const messageSuccess = document.querySelector('.success');
-  const messageError = document.querySelector('.error');
-  let addedMessage;
-  if (messageSuccess) {
-    addedMessage = messageSuccess;
-  } else if (messageError) {
-    addedMessage = messageError;
-  }
-
-  addedMessage.remove();
-  document.removeEventListener('keydown', onModalKeydown);
-  document.removeEventListener('click', onModalClick);
-};
-
-function onModalKeydown(evt) {
-  if (evt.key === 'Escape') {
-    deleteResultMessage();
-  }
-}
-
-const showResultMessage = (templateId) => {
-  const messageTemplate = document.querySelector(`#${templateId}`).content;
-  const message = messageTemplate.cloneNode(true);
-  const messageFragment = document.createDocumentFragment();
-  messageFragment.appendChild(message);
-  document.body.appendChild(messageFragment);
-  const btn = document.querySelector(`.${templateId}__button`);
-  const addedMessage = document.querySelector(`.${templateId}`);
-  document.addEventListener('keydown', onModalKeydown);
-  onModalClick = (evt) => {
-    if (evt.target === addedMessage || evt.target === btn) {
-      deleteResultMessage();
-    }
-  };
-  document.addEventListener('click', onModalClick);
-};
-
-
 const setFormSubmit = () => {
-  {
-    imageForm.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      if(pristine.validate()){
-        blockSubmitButton();
-        uploadPhoto(new FormData(evt.target))
-          .then(showResultMessage('success'))
-          .then(closeModal())
-          .catch(() => {
-            showResultMessage('error');
-          })
-          .finally(unblockSubmitButton());
-      }
-    });
-  }
+  imageForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    const isValid = pristine.validate();
+    if(isValid){
+      blockSubmitButton();
+      uploadPhoto(new FormData(evt.target))
+        .then(() => {
+          closeModal();
+          showResultMessage('success');
+        })
+        .catch(() => showResultMessage('error'))
+        .finally(() => unblockSubmitButton());
+    }
+  });
 };
 
 export {setFormSubmit};
