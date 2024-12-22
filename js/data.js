@@ -1,4 +1,4 @@
-import { getData } from './api.js';
+import { getData } from './functions.js';
 
 const DATA_URL = 'https://29.javascript.htmlacademy.pro/kekstagram/data';
 
