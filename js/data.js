@@ -1,61 +1,59 @@
-import {getRandomInteger, createRandomNumbers, getRandomArrayElement} from './util.js';
+import {getRandomNumber, getRandomObjectArray, createIdGenerator, getRandomArrayElement} from './util.js';
 
-const DESCRIPTIONS = [
-  'Пойманный момент, который невозможно забыть.',
-  'Красота в каждом мгновении.',
-  'Когда слова лишние, а кадр говорит сам за себя.',
-  'Место, куда хочется возвращаться снова и снова.',
-  'Вдохновляющая атмосфера и уникальные детали.',
-  'Тот самый кадр, который заставляет задуматься.',
-  'Настроение, переданное через объектив.',
-  'Секунда, в которой скрыта целая история.',
-  'Здесь каждый найдёт что-то своё.',
-  'Видеть красоту в простых вещах.',
-  'Тут должно быть описание, но его не будет'
-];
-
-const MESSAGES = [
-  'Всё отлично!',
-  'В целом всё неплохо. Но не всё.',
-  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
+const COMMENT_SEQUENCES = [
+  'Всё отлично!', 'В целом всё неплохо.', 'Но не всё.',
+  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра.', 'В конце концов это просто непрофессионально.',
   'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
   'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
+  'Лица у людей на фотке перекошены, как будто их избивают.', 'Как можно было поймать такой неудачный момент?!'
 ];
 
-const NAMES = [
-  'Артём',
-  'Михаил',
-  'Матвей',
-  'Тимофей',
-  'Илья',
-  'Наталья',
-  'Светлана',
-  'Дарья',
-  'Ольга',
-  'Ксения',
+const RANDOM_NAMES = [
+  'Адрей', 'Антон', 'Вася', 'Петя', 'Вика', 'Даша', 'Саша', 'Дмитрий', 'Евгений', 'Бодан', 'Света'
 ];
 
-const generatePhotoId = createRandomNumbers(1, 25);
-const urlId = createRandomNumbers(1, 25);
-const generateNumbersOfLikes = createRandomNumbers(15, 200);
-const userId = createRandomNumbers(1, 100000);
+const RANDOM_ADVERBS = ['quickly', 'quietly', 'happily', 'sadly', 'slowly', 'carefully',
+  'joyfully', 'eagerly', 'angrily', 'calmly', 'loudly', 'boldly', 'gently',
+  'vigorously', 'gracefully', 'patiently', 'sharply', 'politely', 'briskly', 'rudely'
+];
+
+const PHOTO_COUNT = 25;
+const MIN_LIKES = 15;
+const MAX_LIKES = 200;
+const MAX_COMMENTS = 30;
+const AVATAR_COUNT = 6;
+const MIN_COMMENT_ID = 1;
+const MAX_COMMENT_ID = 1000;
+
+const createCommentMessage = (phrasesCount) => {
+  const index = getRandomNumber(0, COMMENT_SEQUENCES.length - 1);
+  let index2 = index;
+  while (index === index2) {
+    index2 = getRandomNumber(0, COMMENT_SEQUENCES.length - 1);
+  }
+
+  return phrasesCount === 1 ? COMMENT_SEQUENCES[index] : `${COMMENT_SEQUENCES[index] } ${ COMMENT_SEQUENCES[index2]}`;
+};
 
 const createComment = () => ({
-  id: userId(),
-  avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
-  message: getRandomArrayElement(MESSAGES),
-  name: getRandomArrayElement(NAMES),
+  id : createIdGenerator(MIN_COMMENT_ID, MAX_COMMENT_ID)(),
+  avatar : `img/avatar-${ getRandomNumber(1, AVATAR_COUNT)}.svg`,
+  message : createCommentMessage(getRandomNumber(1, 2)),
+  name : getRandomArrayElement(RANDOM_NAMES)
 });
 
-const createPhotoDescription = () => ({
-  id: generatePhotoId(),
-  url: `photos/${urlId()}.jpg`,
-  description: getRandomArrayElement(DESCRIPTIONS),
-  likes: generateNumbersOfLikes(),
-  comments: Array.from({length: getRandomInteger(0, 30)}, createComment)
-});
+const getUniqId = createIdGenerator(1, PHOTO_COUNT);
 
-const createPhotoDescriptions = () => Array.from({length: 25}, createPhotoDescription);
+const createPhotoMeta = () => {
+  const photo = {};
+  photo.id = getUniqId();
+  photo.url = `photos/${photo.id}.jpg`;
+  photo.description = getRandomArrayElement(RANDOM_ADVERBS);
+  photo.likes = getRandomNumber(MIN_LIKES, MAX_LIKES);
+  photo.comments = getRandomObjectArray(createComment, MAX_COMMENTS);
+  return photo;
+};
 
-export {createPhotoDescriptions};
+const createPhotos = () => Array.from({length: PHOTO_COUNT}, createPhotoMeta);
+
+export {createPhotos};
