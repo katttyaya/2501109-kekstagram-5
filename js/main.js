@@ -1,5 +1,4 @@
-import { getPhotos } from './load.js';
-import { setFormSubmit } from './form.js';
+import { renderThumbnails } from './filters.js';
+import './form.js';
 
-getPhotos();
-setFormSubmit();
+renderThumbnails();
