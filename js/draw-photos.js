@@ -25,4 +25,6 @@ const drawPhotos = (data) => {
   photosContainer.appendChild(photosFragment);
 };
 
-export {drawPhotos};
+const deletePhotos = () => photosContainer.querySelectorAll('.picture').forEach((element) => element.remove());
+
+export {drawPhotos, deletePhotos};
