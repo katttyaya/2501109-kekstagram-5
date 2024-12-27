@@ -1,3 +1,2 @@
-import './pictures.js';
-import './hashtags.js';
-import './slider.js';
+import './form.js';
+import './filters.js';
