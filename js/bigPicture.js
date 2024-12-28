@@ -1,4 +1,4 @@
-import {isEscapeKey} from './util.js';
+import { isEscapeKey } from './util.js';
 
 const COMMENTS_STEP = 5;
 const bigPicture = document.querySelector('.big-picture');
@@ -82,7 +82,6 @@ const onBigPictureEscKeyDown = (evt) => {
 
 const onCloseBigPictureClick = () => {
   closeBigPicture();
-
   document.removeEventListener('keydown', onBigPictureEscKeyDown);
 };
 
@@ -98,14 +97,12 @@ const openBigPicture = (picture) => {
   pictureCaption.textContent = description;
 
   currentComments = comments.slice();
-
   renderComments();
 
   loadComments.addEventListener('click', onLoadCommentsButtonClick);
-
   document.addEventListener('keydown', onBigPictureEscKeyDown);
 };
 
 pictureCloseButton.addEventListener('click', onCloseBigPictureClick);
 
-export {openBigPicture};
+export { openBigPicture };
