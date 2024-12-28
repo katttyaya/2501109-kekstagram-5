@@ -1,5 +1,5 @@
-import {isEscapeKey} from './util.js';
-import {resetSliderToNone, resetControlToStandart} from './slider-and-control.js';
+import { isEscapeKey } from './util.js';
+import { resetSliderToNone, resetControlToStandart } from './slider.js';
 
 const MAX_HASHTAGS_COUNT = 5;
 const MAX_SYMBOLS = 20;
@@ -9,6 +9,7 @@ const form = document.querySelector('.img-upload__form');
 const formOverlay = form.querySelector('.img-upload__overlay');
 const body = document.querySelector('body');
 const inputHashtag = form.querySelector('.text__hashtags');
+const submitButton = form.querySelector('.img-upload__submit');
 
 const pristine = new Pristine (form, {
   classTo: 'img-upload__field-wrapper',
@@ -103,3 +104,16 @@ const onFileInputChange = () => showModal;
 
 form.addEventListener('change', onFileInputChange());
 form.querySelector('.img-upload__cancel').addEventListener('click', onCancelButtonClick());
+
+const setOnFormSubmit = (callback) => {
+  form.addEventListener('submit', async (evt) => {
+    evt.preventDefault();
+    if (pristine.validate()) {
+      submitButton.disabled = true;
+      await callback(new FormData(form));
+      submitButton.disabled = false;
+    }
+  });
+};
+
+export { hideModal, setOnFormSubmit };
