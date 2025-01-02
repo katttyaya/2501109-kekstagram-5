@@ -1,5 +1,5 @@
 import {isEscapeKey} from './util.js';
-import {resetSliderToNone, resetControlToStandart} from './slider-and-control.js';
+import {resetSliderToNone, resetControlToStandart} from './slider.js';
 
 const MAX_HASHTAGS_COUNT = 5;
 const MAX_SYMBOLS = 20;
