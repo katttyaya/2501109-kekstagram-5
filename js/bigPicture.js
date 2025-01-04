@@ -23,8 +23,7 @@ const renderComments = () => {
 
   if (currentComments.length <= COMMENTS_STEP || commentsCount >= currentComments.length) {
     loadComments.classList.add('hidden');
-  }
-  else {
+  } else {
     loadComments.classList.remove('hidden');
   }
 
