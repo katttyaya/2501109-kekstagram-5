@@ -1,43 +1,58 @@
+import { closeForm } from './slider.js';
 import { isEscapeKey } from './util.js';
+import { uploadData } from './fetch.js';
 
-const successMessage = document.querySelector('#success').content.querySelector('.success');
 const errorMessage = document.querySelector('#error').content.querySelector('.error');
-const body = document.querySelector('body');
+const successMessage = document.querySelector('#success').content.querySelector('.success');
+const formUpload = document.querySelector('.img-upload__form');
 
-const onDocumentKeydown = (evt) => {
+const closePopup = () => {
+  const popup = document.querySelector('.error') || document.querySelector('.success');
+  popup.remove();
+};
+
+const onEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
+    closePopup();
+  }
+};
+
+const onPopupClick = (evt) => {
+  if (!evt.target.classList.contains('succes__inner') && !evt.target.classList.contains('error__inner')) {
     evt.preventDefault();
-    hideMessage();
+    closePopup();
+    document.removeEventListener('keydown', onEscKeydown);
   }
 };
 
-function hideMessage() {
-  const messageElement = document.querySelector('.success') || document.querySelector('.error');
-  messageElement.remove();
-  document.removeEventListener('keydown', onDocumentKeydown);
-  body.removeEventListener('click', onBodyClick);
-}
-
-function onBodyClick(evt) {
-  if (evt.target.closest('.success__inner') || evt.target.closest('.error__inner')) {
-    return;
-  }
-  hideMessage();
-}
-
-const showMessage = (messageElement, closeButtonClass) => {
-  body.append(messageElement);
-  document.addEventListener('keydown', onDocumentKeydown);
-  body.addEventListener('click', onBodyClick);
-  messageElement.querySelector(closeButtonClass).addEventListener('click', hideMessage);
-};
-
-const showSuccessMessage = () => {
-  showMessage(successMessage, '.success__button');
+const showMessage = (message) => {
+  message.addEventListener('click', onPopupClick);
+  document.body.appendChild(message);
+  document.addEventListener('keydown', onEscKeydown, {once: true});
 };
 
 const showErrorMessage = () => {
-  showMessage(errorMessage, '.error__button');
+  const messageFragment = errorMessage.cloneNode(true);
+  showMessage(messageFragment);
 };
 
-export { showSuccessMessage, showErrorMessage };
+const showSuccesMessage = () => {
+  const messageFragment = successMessage.cloneNode(true);
+  showMessage(messageFragment);
+};
+
+const onSuccess = () => {
+  closeForm();
+  showSuccesMessage();
+};
+
+const onFail = () => {
+  showErrorMessage();
+};
+
+const onFormUploadSubmit = (evt) => {
+  evt.preventDefault();
+  uploadData(onSuccess, onFail, 'POST', new FormData(evt.target));
+};
+
+formUpload.addEventListener('submit', onFormUploadSubmit);

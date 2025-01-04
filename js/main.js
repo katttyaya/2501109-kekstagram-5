@@ -1,36 +1,29 @@
-import './pictures.js';
-import { loadData, uploadData } from './fetch.js';
-import { renderPhotos } from './pictures.js';
-import './hashtags.js';
+const SHOW_TIME = 5000;
+
+import {loadData} from './fetch.js';
+import {showAlert} from './util.js';
+import {renderPictures} from './pictures.js';
 import './slider.js';
+import './hashtags.js';
+import {initEffects} from './actions.js';
 import './filters.js';
 import './photos.js';
-import { showAlert } from './util.js';
-import { showErrorMessage, showSuccessMessage } from './messages.js';
-import { hideModal, setOnFormSubmit } from './hashtags.js';
+import './messages.js';
 
-let photos;
+initEffects();
+let photos = [];
 
 const onSuccess = (data) => {
   photos = data.slice();
-  renderPhotos(data.slice());
+  renderPictures(photos);
   document.querySelector('.img-filters').classList.remove('img-filters--inactive');
 };
 
 const onFail = () => {
-  showAlert('Произошла ошибка при загрузке фотографий');
+  showAlert('Ошибка загрузки', SHOW_TIME);
 };
 
 loadData(onSuccess, onFail);
 
-setOnFormSubmit(async (data) => {
-  try {
-    uploadData(data);
-    hideModal();
-    showSuccessMessage();
-  } catch {
-    showErrorMessage();
-  }
-});
+export {photos};
 
-export { photos };

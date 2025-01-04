@@ -1,39 +1,25 @@
-import { isEscapeKey } from './util.js';
-import { resetSliderToNone, resetControlToStandart } from './slider.js';
+import { checkLenght } from './util.js';
 
-const MAX_HASHTAGS_COUNT = 5;
 const MAX_SYMBOLS = 20;
-const VALID_SYMBOLS = /^#[a-zа-яё0-9]{1,19}$/i;
+const MAX_HASHTAGS = 5;
+const MAX_STRING_LENGTH = 140;
 
-const form = document.querySelector('.img-upload__form');
-const formOverlay = form.querySelector('.img-upload__overlay');
-const body = document.querySelector('body');
-const inputHashtag = form.querySelector('.text__hashtags');
-const submitButton = form.querySelector('.img-upload__submit');
+const formUpload = document.querySelector('.img-upload__form');
+const submitButton = document.querySelector('.img-upload__submit');
+const commentsField = formUpload.querySelector('.text__description');
 
-const pristine = new Pristine (form, {
+const pristine = new Pristine(formUpload, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
-});
+  errorTextTag: 'p',
+  errorTextClass: 'img-upload__error'
+}, true);
 
-const showModal = () => {
-  formOverlay.classList.remove('hidden');
-  body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeydown);
+const buttonAdjustment = () => {
+  submitButton.disabled = !pristine.validate();
 };
 
-const hideModal = () => {
-  form.reset();
-  pristine.reset();
-  resetSliderToNone();
-  resetControlToStandart();
-  formOverlay.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
-};
-
-const isTextFieldFocused = () => document.activeElement === inputHashtag
-  || document.activeElement === form.querySelector('.text__description');
+const inputHashtag = document.querySelector('.text__hashtags');
 
 let errorMessage = '';
 
@@ -50,19 +36,11 @@ const hashtagsHandler = (value) => {
 
   const inputArray = inputText.split(/\s+/);
 
+  if (inputArray.length === 0) {
+    return true;
+  }
+
   const rules = [
-    {
-      check: inputArray.some((item) => item.length === 1 && item[0] === '#'),
-      error: 'Хэш-тэг не может состоять из одного символа #',
-    },
-    {
-      check: inputArray.length > MAX_HASHTAGS_COUNT,
-      error: `Нельзя указать более ${MAX_HASHTAGS_COUNT} хэш-тегов`,
-    },
-    {
-      check: inputArray.some((item) => item.length > MAX_SYMBOLS),
-      error: `Максимальная длина одного хэш-тега ${MAX_SYMBOLS} символов, включая решётку`,
-    },
     {
       check: inputArray.some((item) => item.indexOf('#', 1) >= 1),
       error: 'Хэш-теги разделяются пробелами',
@@ -76,7 +54,15 @@ const hashtagsHandler = (value) => {
       error: 'Хэш-теги не должны повторяться',
     },
     {
-      check: inputArray.some((item) => !VALID_SYMBOLS.test(item)),
+      check: inputArray.some((item) => item.length > MAX_SYMBOLS),
+      error: `Максимальная длина одного хэш-тега ${MAX_SYMBOLS} символов, включая решётку`,
+    },
+    {
+      check: inputArray.length > MAX_HASHTAGS,
+      error: `Нельзя указать больше ${MAX_HASHTAGS} хэш-тегов`,
+    },
+    {
+      check: inputArray.some((item) => !/^#[A-Za-zА-Яа-яЁё0-9]{0,19}$/.test(item)),
       error: 'Хэш-тег содержит недопустимые символы',
     },
   ];
@@ -90,30 +76,41 @@ const hashtagsHandler = (value) => {
   });
 };
 
-pristine.addValidator(inputHashtag, hashtagsHandler, error, 2, false);
+const commentHandler = (string) => {
+  errorMessage = '';
 
-function onDocumentKeydown(evt) {
-  if (isEscapeKey(evt) && !isTextFieldFocused()) {
-    evt.preventDefault();
-    hideModal();
+  const inputText = string.trim();
+
+  if(!inputText) {
+    return true;
   }
-}
 
-const onCancelButtonClick = () => hideModal;
-const onFileInputChange = () => showModal;
+  const rule = {
+    check: !checkLenght(inputText, MAX_STRING_LENGTH),
+    error: `Максимальная длина комментария ${MAX_STRING_LENGTH} символов`,
+  };
 
-form.addEventListener('change', onFileInputChange());
-form.querySelector('.img-upload__cancel').addEventListener('click', onCancelButtonClick());
-
-const setOnFormSubmit = (callback) => {
-  form.addEventListener('submit', async (evt) => {
-    evt.preventDefault();
-    if (pristine.validate()) {
-      submitButton.disabled = true;
-      await callback(new FormData(form));
-      submitButton.disabled = false;
-    }
-  });
+  const isInvalid = rule.check;
+  if(isInvalid) {
+    errorMessage = rule.error;
+  }
+  return !isInvalid;
 };
 
-export { hideModal, setOnFormSubmit };
+pristine.addValidator(inputHashtag, hashtagsHandler, error, 2, false);
+pristine.addValidator(commentsField, commentHandler, error, 2, false);
+
+const onHashtagInput = () => buttonAdjustment();
+const onCommentInput = () => buttonAdjustment();
+
+inputHashtag.addEventListener('input', onHashtagInput);
+commentsField.addEventListener('input', onCommentInput);
+
+
+formUpload.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  pristine.validate();
+});
+
+export {inputHashtag, buttonAdjustment};

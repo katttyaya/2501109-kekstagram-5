@@ -1,44 +1,50 @@
-import { openBigPicture } from './bigPicture.js';
-
+import {showBigPicture} from './bigPicture.js';
 const pictures = document.querySelector('.pictures');
-const pictureTemplate = document.querySelector('#picture')
-  .content
-  .querySelector('.picture');
-const picturesFragment = document.createDocumentFragment();
 
+const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const createPictureElement = (picture) => {
-  const { url, description, likes, comments } = picture;
+const removePictures = () => {
+  document.querySelectorAll('.picture').forEach((photo) => photo.remove());
+};
+
+const renderPicture = (photo) => {
+
+  const {url, description, comments, likes} = photo;
+
   const pictureElement = pictureTemplate.cloneNode(true);
 
   pictureElement.querySelector('.picture__img').src = url;
+
   pictureElement.querySelector('.picture__img').alt = description;
+
   pictureElement.querySelector('.picture__comments').textContent = comments.length;
+
   pictureElement.querySelector('.picture__likes').textContent = likes;
 
-  pictureElement.addEventListener('click', (evt) => {
+  const onPictureElementClick = (evt) => {
     evt.preventDefault();
-    openBigPicture(picture);
-  });
+
+    showBigPicture(photo);
+  };
+
+  pictureElement.addEventListener('click', onPictureElementClick);
 
   return pictureElement;
+
 };
 
-const renderPhotos = (photos) => {
+const fragment = document.createDocumentFragment();
+
+const renderPictures = (photos) => {
+
   photos.forEach((photo) => {
-    picturesFragment.appendChild(createPictureElement(photo));
+
+    fragment.appendChild(renderPicture(photo));
+
   });
 
-  pictures.appendChild(picturesFragment);
+  pictures.appendChild(fragment);
+
 };
 
-const removePictures = () => {
-  const images = document.querySelectorAll('.picture');
-  if (images) {
-    images.forEach((element) => {
-      element.remove();
-    });
-  }
-};
-
-export { renderPhotos, removePictures };
+export {renderPictures, removePictures};

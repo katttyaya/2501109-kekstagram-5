@@ -1,197 +1,85 @@
+import { isEscapeKey } from './util.js';
+import { onFilterButtonChange, effectList, sliderWrapper } from './actions.js';
+import {buttonAdjustment} from './hashtags.js';
+
 const Zoom = {
   MIN: 25,
   MAX: 100,
   STEP: 25,
 };
 
-const minusButton = document.querySelector('.scale__control--smaller');
-const plusButton = document.querySelector('.scale__control--bigger');
-const controlValueElement = document.querySelector('input[name="scale"]');
+const body = document.querySelector('body');
+const formUpload = body.querySelector('.img-upload__form');
+const overlay = formUpload.querySelector('.img-upload__overlay');
+const fileUpload = formUpload.querySelector('#upload-file');
+const formUploadClose = formUpload.querySelector('#upload-cancel');
+const minusButton = formUpload.querySelector('.scale__control--smaller');
+const plusButton = formUpload.querySelector('.scale__control--bigger');
+const scaleControlValue = formUpload.querySelector('.scale__control--value');
+const imagePreview = formUpload.querySelector('.img-upload__preview img');
+const commentsField = formUpload.querySelector('.text__description');
+const closeForm = () => {
+  overlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  effectList.removeEventListener('change', onFilterButtonChange);
 
-const sliderField = document.querySelector('.img-upload__effect-level');
-const sliderElement = sliderField.querySelector('.effect-level__slider');
-const sliderElementValue = sliderField.querySelector('.effect-level__value');
+  imagePreview.style.transform = '';
+  imagePreview.className = 'img-upload__preview';
+  imagePreview.style.filter = '';
 
-const previewContainer = document.querySelector('.img-upload__preview');
-const picture = previewContainer.querySelector('img');
-
-const effectRadios = document.querySelectorAll('input[name="effect"]');
-
-const Effects = {
-  chrome: {
-    MAX: 1,
-    MIN: 0,
-    STEP: 0.1,
-  },
-  sepia: {
-    MAX: 1,
-    MIN: 0,
-    STEP: 0.1,
-  },
-  marvin: {
-    MAX: 100,
-    MIN: 0,
-    STEP: 1,
-  },
-  phobos: {
-    MAX: 3,
-    MIN: 0,
-    STEP: 0.1,
-  },
-  heat: {
-    MAX: 3,
-    MIN: 1,
-    STEP: 0.1,
-  },
+  formUpload.reset();
 };
 
-sliderField.classList.add('hidden');
+const onCloseFormEscKeyDown = (evt) => {
+  if (isEscapeKey(evt) &&
+      !evt.target.classList.contains('text__hashtags') &&
+      !evt.target.classList.contains('text__description')
+  ) {
+    evt.preventDefault();
+    closeForm();
 
-const resetSlider = () => {
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
+    document.removeEventListener('keydown', onCloseFormEscKeyDown);
   }
 };
 
-const changeSliderForNone = () => {
-  picture.style.filter = '';
-  sliderField.classList.add('hidden');
-  sliderElement.noUiSlider.destroy();
+const addFieldListener = (field) => {
+  const onFocus = () => {
+    document.removeEventListener('keydown', onCloseFormEscKeyDown);
+  };
+  const onBlur = () => {
+    document.addEventListener('keydown', onCloseFormEscKeyDown);
+  };
+
+  field.addEventListener('focus', onFocus);
+  field.addEventListener('blur', onBlur);
 };
 
-const createSliderForChrome = () => {
-  let currentSliderValue = Effects.chrome.MAX;
-  resetSlider();
-  sliderField.classList.remove('hidden');
-  noUiSlider.create(sliderElement, {
-    range: {
-      min: Effects.chrome.MIN,
-      max: Effects.chrome.MAX,
-    },
-    start: Effects.chrome.MAX,
-    step: Effects.chrome.STEP,
-    connect: 'lower',
-  });
+const changeImages = () => {
+  const file = fileUpload.files[0];
+  const fileUrl = URL.createObjectURL(file);
 
-  sliderElement.noUiSlider.on('update', () => {
-    currentSliderValue = sliderElement.noUiSlider.get();
-    sliderElementValue.value = currentSliderValue;
-    picture.style.filter = `grayscale(${currentSliderValue})`;
-  });
+  imagePreview.src = fileUrl;
 };
 
-const createSliderForSepia = () => {
-  let currentSliderValue = Effects.sepia.MAX;
-  resetSlider();
-  sliderField.classList.remove('hidden');
-  noUiSlider.create(sliderElement, {
-    range: {
-      min: Effects.sepia.MIN,
-      max: Effects.sepia.MAX,
-    },
-    start: Effects.sepia.MAX,
-    step: Effects.sepia.STEP,
-    connect: 'lower',
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    currentSliderValue = sliderElement.noUiSlider.get();
-    sliderElementValue.value = currentSliderValue;
-    picture.style.filter = `sepia(${currentSliderValue})`;
-  });
+const onFileUploadChange = () => {
+  overlay.classList.remove('hidden');
+  body.classList.add('modal-open');
+  changeImages();
+  document.addEventListener('keydown', onCloseFormEscKeyDown);
+  sliderWrapper.classList.add('hidden');
+  effectList.addEventListener('change', onFilterButtonChange);
+  addFieldListener(commentsField);
+  buttonAdjustment();
 };
 
-const createSliderForMarvin = () => {
-  let currentSliderValue = Effects.marvin.MAX;
-  resetSlider();
-  sliderField.classList.remove('hidden');
-  noUiSlider.create(sliderElement, {
-    range: {
-      min: Effects.marvin.MIN,
-      max: Effects.marvin.MAX,
-    },
-    start: Effects.marvin.MAX,
-    step: Effects.marvin.STEP,
-    connect: 'lower',
-  });
+fileUpload.addEventListener('change', onFileUploadChange);
 
-  sliderElement.noUiSlider.on('update', () => {
-    currentSliderValue = sliderElement.noUiSlider.get();
-    sliderElementValue.value = currentSliderValue;
-    picture.style.filter = `invert(${currentSliderValue}%)`;
-  });
-};
-
-const createSliderForPhobos = () => {
-  let currentSliderValue = Effects.phobos.MAX;
-  resetSlider();
-  sliderField.classList.remove('hidden');
-  noUiSlider.create(sliderElement, {
-    range: {
-      min: Effects.phobos.MIN,
-      max: Effects.phobos.MAX,
-    },
-    start: Effects.phobos.MAX,
-    step: Effects.phobos.STEP,
-    connect: 'lower',
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    currentSliderValue = sliderElement.noUiSlider.get();
-    sliderElementValue.value = currentSliderValue;
-    picture.style.filter = `blur(${currentSliderValue}px)`;
-  });
-};
-
-const createSliderForHeat = () => {
-  let currentSliderValue = Effects.heat.MAX;
-  resetSlider();
-  sliderField.classList.remove('hidden');
-  noUiSlider.create(sliderElement, {
-    range: {
-      min: Effects.heat.MIN,
-      max: Effects.heat.MAX,
-    },
-    start: Effects.heat.MAX,
-    step: Effects.heat.STEP,
-    connect: 'lower',
-  });
-
-  sliderElement.noUiSlider.on('update', () => {
-    currentSliderValue = sliderElement.noUiSlider.get();
-    sliderElementValue.value = currentSliderValue;
-    picture.style.filter = `brightness(${currentSliderValue})`;
-  });
-};
-
-effectRadios.forEach((radio) => {
-  radio.addEventListener('change', (evt) => {
-    if (evt.target.value === 'none') {
-      changeSliderForNone();
-    } else if (evt.target.value === 'chrome') {
-      createSliderForChrome();
-    } else if (evt.target.value === 'sepia') {
-      createSliderForSepia();
-    } else if (evt.target.value === 'marvin') {
-      createSliderForMarvin();
-    } else if (evt.target.value === 'phobos') {
-      createSliderForPhobos();
-    } else if (evt.target.value === 'heat') {
-      createSliderForHeat();
-    }
-  });
+formUploadClose.addEventListener('click', () => {
+  closeForm();
 });
 
-const resetSliderToNone = () => {
-  picture.style.filter = '';
-  sliderField.classList.add('hidden');
-  if (sliderElement.noUiSlider) {
-    sliderElement.noUiSlider.destroy();
-  }
-};
-
 const changeZoom = (factor = 1) => {
-  let size = parseInt(controlValueElement.value, 10) + (Zoom.STEP * factor);
+  let size = parseInt(scaleControlValue.value, 10) + (Zoom.STEP * factor);
 
   if (size < Zoom.MIN) {
     size = Zoom.MIN;
@@ -201,8 +89,8 @@ const changeZoom = (factor = 1) => {
     size = Zoom.MAX;
   }
 
-  controlValueElement.value = `${size}%`;
-  previewContainer.style.transform = `scale(${size / 100})`;
+  scaleControlValue.value = `${size}%`;
+  imagePreview.style.transform = `scale(${size / 100})`;
 };
 
 const onMinusButtonClick = () => {
@@ -213,12 +101,7 @@ const onPlusButtonClick = () => {
   changeZoom();
 };
 
-const resetControlToStandart = () => {
-  controlValueElement.value = '100%';
-  previewContainer.style.transform = 'scale(1)';
-};
-
 minusButton.addEventListener('click', onMinusButtonClick);
 plusButton.addEventListener('click', onPlusButtonClick);
 
-export {resetSliderToNone, resetControlToStandart};
+export {closeForm, formUpload, imagePreview};
