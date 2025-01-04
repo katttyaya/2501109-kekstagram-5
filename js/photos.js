@@ -5,7 +5,7 @@ const preview =  document.querySelector('.img-upload__preview img');
 const effectList = document.querySelector('.effects__list');
 const smallImages = effectList.querySelectorAll('span');
 
-const onUploadImageChange =() => {
+const onUploadImageChange = () => {
   const file = uploadFile.files[0];
   const fileName = file.name.toLowerCase();
 
