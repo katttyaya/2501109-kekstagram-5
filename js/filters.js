@@ -11,7 +11,7 @@ const imgFiltersForm = document.querySelector('.img-filters__form');
 const availableFilters = {
   'filter-default': () => photos.slice(),
   'filter-random': () => shuffleArray(photos.slice()).slice(0, COUNT_OF_FILTERS),
-  'filter-discussed': () => photos.slice().sort((firstElement, secondElement) => secondElement.comments.length - firstElement.comments.length ),
+  'filter-discussed': () => photos.slice().sort((firstElement, secondElement) => secondElement.comments.length - firstElement.comments.length),
 };
 
 const isButton = (evt) => evt.target.tagName === 'BUTTON';
