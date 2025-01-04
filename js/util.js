@@ -22,7 +22,7 @@ const closeOnEscKeyDown = (evt, cb) => {
   }
 };
 
-const  debounce = (cb) => {
+const debounce = (cb) => {
   let lastTimeOut = null;
 
   return (...args) =>{
@@ -55,4 +55,4 @@ const showAlert = (message, alertShowTime) => {
   setTimeout(() => alertContainer.remove(), alertShowTime);
 };
 
-export{randomInteger, closeOnEscKeyDown, isEscapeKey, showAlert, checkLenght, debounce, shuffleArray};
+export {randomInteger, closeOnEscKeyDown, isEscapeKey, showAlert, checkLenght, debounce, shuffleArray};
