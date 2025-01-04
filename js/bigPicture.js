@@ -53,12 +53,10 @@ const renderComments = () => {
 
   socialComments.appendChild(commentFragment);
 };
-
 const onLoadCommentsButtonClick = () => {
   commentsCount += COMMENTS_STEP;
   renderComments();
 };
-
 const closeBigPicture = () => {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
@@ -67,7 +65,6 @@ const closeBigPicture = () => {
   currentComments = [];
   socialFooterText.value = '';
 };
-
 const onBigPictureEskKeyDown = (evt) => {
   closeOnEscKeyDown(evt, () => {
     closeBigPicture();
@@ -76,14 +73,12 @@ const onBigPictureEskKeyDown = (evt) => {
     loadComments.removeEventListener('click', onLoadCommentsButtonClick);
   });
 };
-
 const onClosebigPictureClick = () => {
   closeBigPicture();
 
   document.removeEventListener('keydown', onBigPictureEskKeyDown);
   pictureCloseButton.removeEventListener('click', onClosebigPictureClick);
 };
-
 const showBigPicture = (picture) => {
   const {url, description, comments, likes} = picture;
 
@@ -103,5 +98,4 @@ const showBigPicture = (picture) => {
   document.addEventListener('keydown', onBigPictureEskKeyDown);
   pictureCloseButton.addEventListener('click', onClosebigPictureClick);
 };
-
 export {showBigPicture};
