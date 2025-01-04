@@ -15,11 +15,12 @@ const onUploadImageChange = () => {
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       preview.src = reader.result;
-      smallImages.forEach((evt)=> {evt.style.backgroundImage = `url(${reader.result})`;});
+      smallImages.forEach((evt) => {
+        evt.style.backgroundImage = `url(${reader.result})`;
+      });
     });
     reader.readAsDataURL(file);
   }
 };
 
 uploadFile.addEventListener('change', onUploadImageChange);
-
