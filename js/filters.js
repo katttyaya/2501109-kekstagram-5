@@ -14,7 +14,7 @@ const availableFilters = {
   'filter-discussed': () => photos.slice().sort((firstElement, secondElement) => secondElement.comments.length - firstElement.comments.length ),
 };
 
-const isButton =(evt) => evt.target.tagName === 'BUTTON';
+const isButton = (evt) => evt.target.tagName === 'BUTTON';
 
 const onImgFiltersFormClick = debounce((evt) => {
   if (isButton(evt)){
@@ -24,8 +24,8 @@ const onImgFiltersFormClick = debounce((evt) => {
   }
 });
 
-const onButtonClick =(evt) => {
-  if (isButton(evt)){
+const onButtonClick = (evt) => {
+  if (isButton(evt)) {
     const selectedButton = imgFiltersForm.querySelector(`.${ACTIVE_CLASS}`);
 
     if (selectedButton){
