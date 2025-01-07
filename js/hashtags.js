@@ -23,7 +23,7 @@ const inputHashtag = document.querySelector('.text__hashtags');
 
 let errorMessage = '';
 
-const error = () => errorMessage;
+const getErrorMessage = () => errorMessage;
 
 const hashtagsHandler = (value) => {
   errorMessage = '';
@@ -97,8 +97,8 @@ const commentHandler = (string) => {
   return !isInvalid;
 };
 
-pristine.addValidator(inputHashtag, hashtagsHandler, error, 2, false);
-pristine.addValidator(commentsField, commentHandler, error, 2, false);
+pristine.addValidator(inputHashtag, hashtagsHandler, getErrorMessage, 2, false);
+pristine.addValidator(commentsField, commentHandler, getErrorMessage, 2, false);
 
 const onHashtagInput = () => buttonAdjustment();
 const onCommentInput = () => buttonAdjustment();
